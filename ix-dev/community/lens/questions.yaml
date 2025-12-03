@@ -290,8 +290,8 @@ questions:
                         type: boolean
                         default: false
                         show_if: [["acl_enable", "=", false]]
-        - variable: uploads_data
-          label: Uploads Data Storage
+        - variable: uploads
+          label: Uploads Storage
           description: The path to store user uploads.
           schema:
             type: dict
@@ -332,7 +332,7 @@ questions:
                         type: string
                         required: true
                         hidden: true
-                        default: "uploads_data"
+                        default: "uploads"
                     - variable: acl_entries
                       label: ACL Configuration
                       schema:

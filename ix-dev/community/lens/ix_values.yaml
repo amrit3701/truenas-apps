@@ -32,4 +32,7 @@ consts:
   fc_worker_api_container_name: fc-worker-api
   fc_worker_celery_container_name: fc-worker-celery
   perms_container_name: permissions
+
   init_container_name: lens-init
+  lens_uploads_path: /app/uploads
+  init_uploads_path: /data

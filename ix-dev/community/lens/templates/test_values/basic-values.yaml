@@ -29,7 +29,7 @@ run_as:
 
 ix_volumes:
   mongodb_data: /opt/tests/mnt/lens/mongodb_data
-  uploads_data: /opt/tests/uploads_data
+  uploads: /opt/tests/mnt/lens/uploads
 
 storage:
   mongodb_data:
@@ -37,9 +37,9 @@ storage:
     ix_volume_config:
       dataset_name: mongodb_data
       create_host_path: true
-  uploads_data:
+  uploads:
     type: ix_volume
     ix_volume_config:
-      dataset_name: uploads_data
+      dataset_name: uploads
       create_host_path: true
   additional_storage: []
