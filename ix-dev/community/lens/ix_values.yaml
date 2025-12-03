@@ -26,6 +26,9 @@ consts:
   db_user: lens
   db_name: lens
 
+  backend_port: 3030
+  frontend_port: 80
+
   backend_container_name: backend
   frontend_container_name: frontend
   fc_worker_redis_container_name: fc-worker-redis

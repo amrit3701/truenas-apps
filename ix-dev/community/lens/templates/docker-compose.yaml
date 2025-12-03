@@ -28,11 +28,11 @@
 {% set backend = tpl.add_container(values.consts.backend_container_name, "backend") %}
 {% do backend.depends.add_dependency(values.consts.mongo_container_name, "service_healthy") %}
 {% do backend.depends.add_dependency(values.consts.init_container_name, "service_completed_successfully") %}
-{% do backend.add_port({"port_number": values.lens.port, "bind_mode": "published", "container_port": values.lens.port}) %}
-{% do backend.healthcheck.set_test("wget", {"port": values.lens.port, "path": "/"}) %}
+{% do backend.add_port(values.network.backend_port, {"container_port": values.consts.backend_port}) %}
+{% do backend.healthcheck.set_test("wget", {"port": values.consts.backend_port, "path": "/"}) %}
 
 {% do backend.environment.add_env("HOSTNAME", values.lens.hostname) %}
-{% do backend.environment.add_env("PORT", values.lens.port) %}
+{% do backend.environment.add_env("PORT", values.consts.backend_port) %}
 {% do backend.environment.add_env("DB_URL", mongo.get_url("mongodb")+"?authSource=admin") %}
 {% do backend.environment.add_env("FRONTEND_URL", values.lens.frontend_url) %}
 {% do backend.environment.add_env("FC_WORKER_URL", "http://0.0.0.0:8080/2015-03-31/functions/function/invocations") %}
@@ -66,8 +66,8 @@
 {% set frontend = tpl.add_container(values.consts.frontend_container_name, "frontend") %}
 {% do frontend.add_caps(["CHOWN", "SETUID", "SETGID"]) %}
 {% do frontend.depends.add_dependency(values.consts.backend_container_name, "service_healthy") %}
-{% do frontend.add_port({"port_number": values.lens.frontend_port, "bind_mode": "published", "container_port": 80}) %}
-{% do frontend.healthcheck.set_test("http", {"port": 80, "path": "/"}) %}
+{% do frontend.add_port(values.network.frontend_port, {"container_port": values.consts.frontend_port}) %}
+{% do frontend.healthcheck.set_test("http", {"port": values.consts.frontend_port, "path": "/"}) %}
 
 {% if values.lens.vite_app_api_url %}
   {% set api_url = values.lens.vite_app_api_url %}
@@ -76,7 +76,7 @@
   {% endif %}
   {% do frontend.environment.add_env("VITE_APP_API_URL", api_url) %}
 {% else %}
-  {% do frontend.environment.add_env("VITE_APP_API_URL", "http://%s:%d/" | format(values.lens.hostname, values.lens.port)) %}
+  {% do frontend.environment.add_env("VITE_APP_API_URL", "http://%s:%d/" | format(values.lens.hostname, values.network.backend_port.port_number)) %}
 {% endif %}
 
 {% if values.lens.vite_stripe_purchase_peer_url %}
@@ -104,7 +104,7 @@
 
 {% do fc_worker_celery.environment.add_env("REDIS_HOST", values.consts.fc_worker_redis_container_name) %}
 {% do fc_worker_celery.environment.add_env("REDIS_PORT", "6379") %}
-{% do fc_worker_celery.environment.add_env("BACKEND_URL", "http://%s:%d" | format(values.consts.backend_container_name, values.lens.port)) %}
+{% do fc_worker_celery.environment.add_env("BACKEND_URL", "http://%s:%d" | format(values.consts.backend_container_name, values.consts.backend_port)) %}
 
 {# Permissions Container #}
 {% if perm_container.has_actions() %}
@@ -113,7 +113,7 @@
 {% endif %}
 
 {# Portals #}
-{% do tpl.portals.add({"port_number": values.lens.port, "bind_mode": "published"}, {"name": "Backend API"}) %}
-{% do tpl.portals.add({"port_number": values.lens.frontend_port, "bind_mode": "published"}, {"name": "Frontend"}) %}
+{% do tpl.portals.add(values.network.backend_port, {"name": "Backend API"}) %}
+{% do tpl.portals.add(values.network.frontend_port, {"name": "Frontend"}) %}
 
 {{ tpl.render() | tojson }}

@@ -6,8 +6,6 @@ resources:
 lens:
   db_password: secret
   hostname: localhost
-  port: 3030
-  frontend_port: 3000
   frontend_url: http://localhost:3000
   default_admin_email: admin@local.test
   default_admin_username: admin
@@ -29,6 +27,14 @@ lens:
 run_as:
   user: 0
   group: 0
+
+network:
+  frontend_port:
+    bind_mode: published
+    port_number: 8080
+  backend_port:
+    bind_mode: published
+    port_number: 8081
 
 ix_volumes:
   mongodb_data: /opt/tests/mnt/lens/mongodb_data
