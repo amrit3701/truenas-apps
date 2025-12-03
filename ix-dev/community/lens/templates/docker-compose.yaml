@@ -37,20 +37,12 @@
 {% do backend.environment.add_env("FRONTEND_URL", values.lens.frontend_url) %}
 {% do backend.environment.add_env("FC_WORKER_URL", "http://0.0.0.0:8080/2015-03-31/functions/function/invocations") %}
 
-{% if values.lens.smtp_host %}
-  {% do backend.environment.add_env("SMTP_HOST", values.lens.smtp_host) %}
-{% endif %}
-{% if values.lens.smtp_port %}
-  {% do backend.environment.add_env("SMTP_PORT", values.lens.smtp_port) %}
-{% endif %}
-{% if values.lens.smtp_user %}
-  {% do backend.environment.add_env("SMTP_USER", values.lens.smtp_user) %}
-{% endif %}
-{% if values.lens.smtp_pass %}
-  {% do backend.environment.add_env("SMTP_PASS", values.lens.smtp_pass) %}
-{% endif %}
-{% if values.lens.smtp_from %}
-  {% do backend.environment.add_env("SMTP_FROM", values.lens.smtp_from) %}
+{% if values.lens.setup_email %}
+  {% do backend.environment.add_env("SMTP_HOST", values.lens.email.host) %}
+  {% do backend.environment.add_env("SMTP_PORT", values.lens.email.port) %}
+  {% do backend.environment.add_env("SMTP_USER", values.lens.email.username) %}
+  {% do backend.environment.add_env("SMTP_PASS", values.lens.email.password) %}
+  {% do backend.environment.add_env("SMTP_FROM", values.lens.email.from) %}
 {% endif %}
 
 {% do backend.environment.add_env("DEFAULT_ADMIN_EMAIL", values.lens.default_admin_email) %}
@@ -61,6 +53,8 @@
 {% if values.lens.local_signed_url_secret %}
   {% do backend.environment.add_env("LOCAL_SIGNED_URL_SECRET", values.lens.local_signed_url_secret) %}
 {% endif %}
+
+{% do backend.environment.add_user_envs(values.lens.additional_envs) %}
 
 {% do backend.add_storage(values.consts.lens_uploads_path, values.storage.uploads) %}
 

@@ -14,11 +14,14 @@ lens:
   default_admin_password: admin@local.test
   default_admin_name: Administrator
   local_signed_url_secret: test-secret-key-change-in-production
-  smtp_host: ""
-  smtp_port: 465
-  smtp_user: ""
-  smtp_pass: ""
-  smtp_from: ""
+  setup_email: false
+  email:
+    host: smtp.test.com
+    port: 587
+    from: lens@test.com
+    username: test
+    password: testing123
+    security: tls
   vite_app_api_url: ""
   vite_stripe_purchase_peer_url: ""
   additional_envs: []

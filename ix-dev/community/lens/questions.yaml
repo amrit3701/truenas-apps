@@ -5,8 +5,6 @@ groups:
     description: Default administrator account
   - name: Security
     description: Security and secrets configuration
-  - name: SMTP Configuration
-    description: Email server settings (optional)
   - name: Frontend Configuration
     description: Frontend environment variables
   - name: Storage Configuration
@@ -120,42 +118,60 @@ questions:
             type: string
             hidden: true
 
-        - variable: smtp_host
-          label: SMTP Host
-          group: SMTP Configuration
-          description: SMTP server hostname
+        - variable: setup_email
+          label: Setup Email
+          description: |
+            Setup email for notifications (password reset, etc).
           schema:
-            type: string
-
-        - variable: smtp_port
-          label: SMTP Port
-          group: SMTP Configuration
-          description: SMTP server port
+            type: boolean
+            default: false
+        - variable: email
+          label: Email Configuration
+          description: Configure email for notifications (password reset, etc).
           schema:
-            type: integer
-            default: 465
-
-        - variable: smtp_user
-          label: SMTP Username
-          group: SMTP Configuration
-          description: SMTP authentication username
-          schema:
-            type: string
-
-        - variable: smtp_pass
-          label: SMTP Password
-          group: SMTP Configuration
-          description: SMTP authentication password
-          schema:
-            type: string
-            hidden: true
-
-        - variable: smtp_from
-          label: SMTP From Address
-          group: SMTP Configuration
-          description: Email address to send emails from
-          schema:
-            type: string
+            type: dict
+            show_if: [["setup_email", "=", true]]
+            attrs:
+              - variable: host
+                label: SMTP Host
+                schema:
+                  type: string
+                  required: true
+              - variable: port
+                label: SMTP Port
+                schema:
+                  type: int
+                  min: 1
+                  max: 65535
+                  required: true
+                  default: 587
+              - variable: from
+                label: SMTP From
+                schema:
+                  type: string
+                  required: true
+              - variable: username
+                label: SMTP Username
+                schema:
+                  type: string
+                  required: true
+              - variable: password
+                label: SMTP Password
+                schema:
+                  type: string
+                  required: true
+                  private: true
+              - variable: security
+                label: SMTP Security
+                schema:
+                  type: string
+                  required: true
+                  default: tls
+                  enum:
+                    - value: tls
+                      description: TLS
+                    - value: ssl
+                      description: SSL
 
         - variable: vite_app_api_url
           label: API URL
