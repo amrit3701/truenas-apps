@@ -93,7 +93,7 @@
 {% do fc_worker_api.set_network_mode("service:%s" | format(values.consts.backend_container_name)) %}
 {% do fc_worker_api.depends.add_dependency(values.consts.backend_container_name, "service_healthy") %}
 {% do fc_worker_api.depends.add_dependency(values.consts.redis_container_name, "service_healthy") %}
-{% do fc_worker_api.healthcheck.set_custom_test("echo 'OK'") %}
+{% do fc_worker_api.healthcheck.set_custom_test("wget --quiet --method=POST --header='Content-Type: application/json' --body-data='{\"command\":\"health_check\"}' -O /dev/null http://0.0.0.0:8080/2015-03-31/functions/function/invocations") %}
 
 {% do fc_worker_api.environment.add_env("REDIS_HOST", values.consts.redis_container_name) %}
 {% do fc_worker_api.environment.add_env("REDIS_PORT", redis.get_port()) %}
@@ -104,7 +104,7 @@
 {% do fc_worker_celery.set_network_mode("service:%s" | format(values.consts.backend_container_name)) %}
 {% do fc_worker_celery.depends.add_dependency(values.consts.backend_container_name, "service_healthy") %}
 {% do fc_worker_celery.depends.add_dependency(values.consts.redis_container_name, "service_healthy") %}
-{% do fc_worker_celery.healthcheck.set_custom_test("echo 'OK'") %}
+{% do fc_worker_celery.healthcheck.set_custom_test("pgrep -f 'celery worker' > /dev/null") %}
 
 {% do fc_worker_celery.environment.add_env("REDIS_HOST", values.consts.redis_container_name) %}
 {% do fc_worker_celery.environment.add_env("REDIS_PORT", redis.get_port()) %}
