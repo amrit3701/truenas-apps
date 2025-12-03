@@ -19,6 +19,13 @@ questions:
     schema:
       type: dict
       attrs:
+        - variable: db_password
+          label: Database Password
+          schema:
+            type: string
+            default: ""
+            required: true
+            private: true
         - variable: hostname
           label: Hostname
           description: |
@@ -65,17 +72,6 @@ questions:
             type: uri
             default: ""
             required: true
-
-        - variable: expose_db_port
-          label: MongoDB Exposed Port
-          description: |
-            External port for MongoDB (optional).</br>
-            By default, MongoDB is not exposed externally.</br>
-            If a port is provided, MongoDB will be exposed on the specified port for external access.
-          schema:
-            type: integer
-            minimum: 1024
-            maximum: 65535
 
         - variable: default_admin_email
           label: Admin Email
@@ -209,7 +205,6 @@ questions:
       attrs:
         - variable: mongodb_data
           label: MongoDB Data Storage
-          description: The path to store MongoDB database files.
           schema:
             type: dict
             attrs:
@@ -283,6 +278,18 @@ questions:
                         type: hostpath
                         show_if: [["acl_enable", "=", false]]
                         required: true
+                    - variable: auto_permissions
+                      label: Automatic Permissions
+                      description: |
+                        Automatically set permissions for the host path.
+                        Enabling this, will check the top level directory,</br>
+                        If it finds incorrect permissions, it will `chown` the
+                        host path to the user and group required for the
+                        postgres container.
+                      schema:
+                        type: boolean
+                        default: false
+                        show_if: [["acl_enable", "=", false]]
         - variable: uploads_data
           label: Uploads Data Storage
           description: The path to store user uploads.

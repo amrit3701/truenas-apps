@@ -4,11 +4,11 @@ resources:
     memory: 4096
 
 lens:
+  db_password: secret
   hostname: localhost
   port: 3030
   frontend_port: 3000
   frontend_url: http://localhost:3000
-  expose_db_port: 27018
   default_admin_email: admin@local.test
   default_admin_username: admin
   default_admin_password: admin@local.test
@@ -28,7 +28,7 @@ run_as:
   group: 0
 
 ix_volumes:
-  mongodb_data: /opt/tests/mongodb_data
+  mongodb_data: /opt/tests/mnt/lens/mongodb_data
   uploads_data: /opt/tests/uploads_data
 
 storage:
