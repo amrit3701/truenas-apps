@@ -64,6 +64,10 @@
 
 {% do backend.add_storage(values.consts.lens_uploads_path, values.storage.uploads) %}
 
+{% for store in values.storage.additional_storage %}
+  {% do backend.add_storage(store.mount_path, store) %}
+{% endfor %}
+
 {# Frontend Container #}
 {% set frontend = tpl.add_container(values.consts.frontend_container_name, "frontend") %}
 {% do frontend.add_caps(["CHOWN", "SETUID", "SETGID"]) %}
