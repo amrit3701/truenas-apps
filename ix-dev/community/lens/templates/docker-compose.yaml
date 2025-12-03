@@ -22,12 +22,10 @@
 
 {# Redis Container #}
 {% set redis = tpl.add_container(values.consts.fc_worker_redis_container_name, "redis") %}
-{% do redis.set_user(values.run_as.user, values.run_as.group) %}
 {% do redis.healthcheck.set_test("redis", {"port": 6379}) %}
 
 {# Backend Container #}
 {% set backend = tpl.add_container(values.consts.backend_container_name, "backend") %}
-{% do backend.set_user(values.run_as.user, values.run_as.group) %}
 {% do backend.depends.add_dependency(values.consts.mongo_container_name, "service_healthy") %}
 {% do backend.depends.add_dependency(values.consts.init_container_name, "service_completed_successfully") %}
 {% do backend.add_port({"port_number": values.lens.port, "bind_mode": "published", "container_port": values.lens.port}) %}
@@ -68,7 +66,6 @@
 
 {# Frontend Container #}
 {% set frontend = tpl.add_container(values.consts.frontend_container_name, "frontend") %}
-{% do frontend.set_user(values.run_as.user, values.run_as.group) %}
 {% do frontend.add_caps(["CHOWN", "SETUID", "SETGID"]) %}
 {% do frontend.depends.add_dependency(values.consts.backend_container_name, "service_healthy") %}
 {% do frontend.add_port({"port_number": values.lens.frontend_port, "bind_mode": "published", "container_port": 80}) %}
@@ -92,7 +89,6 @@
 
 {# FC Worker API Container #}
 {% set fc_worker_api = tpl.add_container(values.consts.fc_worker_api_container_name, "fc_worker_api") %}
-{% do fc_worker_api.set_user(values.run_as.user, values.run_as.group) %}
 {% do fc_worker_api.set_network_mode("service:%s" | format(values.consts.backend_container_name)) %}
 {% do fc_worker_api.depends.add_dependency(values.consts.backend_container_name, "service_healthy") %}
 {% do fc_worker_api.depends.add_dependency(values.consts.fc_worker_redis_container_name, "service_healthy") %}
@@ -103,7 +99,6 @@
 
 {# FC Worker Celery Container #}
 {% set fc_worker_celery = tpl.add_container(values.consts.fc_worker_celery_container_name, "fc_worker_celery") %}
-{% do fc_worker_celery.set_user(values.run_as.user, values.run_as.group) %}
 {% do fc_worker_celery.set_network_mode("service:%s" | format(values.consts.backend_container_name)) %}
 {% do fc_worker_celery.depends.add_dependency(values.consts.backend_container_name, "service_healthy") %}
 {% do fc_worker_celery.depends.add_dependency(values.consts.fc_worker_redis_container_name, "service_healthy") %}
@@ -117,8 +112,6 @@
 {% if perm_container.has_actions() %}
   {% do perm_container.activate() %}
   {% do mongo.container.depends.add_dependency(values.consts.perms_container_name, "service_completed_successfully") %}
-  {% do backend.depends.add_dependency(values.consts.perms_container_name, "service_completed_successfully") %}
-  {% do init_container.depends.add_dependency(values.consts.perms_container_name, "service_completed_successfully") %}
 {% endif %}
 
 {# Portals #}
