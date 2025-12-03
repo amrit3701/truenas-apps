@@ -11,6 +11,10 @@ groups:
     description: Configure network ports for Lens
   - name: Storage Configuration
     description: Configure Storage for Lens
+  - name: Labels Configuration
+    description: Configure Labels for Lens
+  - name: Resources Configuration
+    description: Configure Resources for Lens
 
 questions:
   - variable: lens
@@ -628,3 +632,76 @@ questions:
                             schema:
                               type: string
                               required: true
+
+  - variable: labels
+    label: ""
+    group: Labels Configuration
+    schema:
+      type: list
+      default: []
+      items:
+        - variable: label
+          label: Label
+          schema:
+            type: dict
+            attrs:
+              - variable: key
+                label: Key
+                schema:
+                  type: string
+                  required: true
+              - variable: value
+                label: Value
+                schema:
+                  type: string
+                  required: true
+              - variable: containers
+                label: Containers
+                description: Containers where the label should be applied
+                schema:
+                  type: list
+                  items:
+                    - variable: container
+                      label: Container
+                      schema:
+                        type: string
+                        required: true
+                        enum:
+                          - value: backend
+                            description: backend
+                          - value: frontend
+                            description: frontend
+                          - value: fc-worker-api
+                            description: fc-worker-api
+                          - value: fc-worker-celery
+                            description: fc-worker-celery
+                          - value: redis
+                            description: redis
+                          - value: mongo
+                            description: mongo
+
+  - variable: resources
+    label: ""
+    group: Resources Configuration
+    schema:
+      type: dict
+      attrs:
+        - variable: limits
+          label: Limits
+          schema:
+            type: dict
+            attrs:
+              - variable: cpus
+                label: CPUs
+                description: CPUs limit for Lens.
+                schema:
+                  type: int
+                  default: 2
+                  required: true
+              - variable: memory
+                label: Memory (in MB)
+                description: Memory limit for Lens.
+                schema:
+                  type: int
+                  default: 4096
+                  required: true
