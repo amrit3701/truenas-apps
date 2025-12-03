@@ -5,6 +5,7 @@ resources:
 
 lens:
   db_password: secret
+  redis_password: secret
   hostname: localhost
   frontend_url: http://localhost:3000
   default_admin_email: admin@local.test

@@ -14,9 +14,9 @@ images:
   fc_worker_celery:
     repository: amrit3701/lens
     tag: fc-worker-celery-latest
-  redis:
-    repository: redis
-    tag: alpine
+  redis_image:
+    repository: valkey/valkey
+    tag: 9.0.0
   container_utils_image:
     repository: ixsystems/container-utils
     tag: 1.0.2
@@ -31,7 +31,7 @@ consts:
 
   backend_container_name: backend
   frontend_container_name: frontend
-  fc_worker_redis_container_name: fc-worker-redis
+  redis_container_name: redis
   fc_worker_api_container_name: fc-worker-api
   fc_worker_celery_container_name: fc-worker-celery
   perms_container_name: permissions

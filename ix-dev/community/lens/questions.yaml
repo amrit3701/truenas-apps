@@ -26,6 +26,13 @@ questions:
             default: ""
             required: true
             private: true
+        - variable: redis_password
+          label: Redis Password
+          schema:
+            type: string
+            default: ""
+            required: true
+            private: true
         - variable: hostname
           label: Hostname
           description: |
