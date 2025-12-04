@@ -1,12 +1,6 @@
 groups:
   - name: Lens Configuration
     description: Configure Lens
-  - name: Admin User
-    description: Default administrator account
-  - name: Security
-    description: Security and secrets configuration
-  - name: Frontend Configuration
-    description: Frontend environment variables
   - name: Network Configuration
     description: Configure network ports for Lens
   - name: Storage Configuration
@@ -49,7 +43,6 @@ questions:
             type: string
             default: ""
             required: true
-
         - variable: frontend_url
           label: Frontend URL
           description: |
@@ -63,54 +56,50 @@ questions:
             type: uri
             default: ""
             required: true
-
+        - variable: vite_app_api_url
+          label: API URL
+          description: |
+            Backend API URL for frontend (optional).</br>
+            If not provided, will be automatically constructed from hostname and backend port (http://hostname:port).</br>
+            Examples:</br>
+            - http://truenas.local:3030</br>
+            - http://192.168.1.100:3030
+          schema:
+            type: uri
+        - variable: vite_stripe_purchase_peer_url
+          label: Stripe Purchase URL
+          description: Stripe payment processing URL
+          schema:
+            type: string
         - variable: default_admin_email
           label: Admin Email
-          group: Admin User
           description: Email address for the default admin user
           schema:
             type: string
             default: admin@local.test
             required: true
-
         - variable: default_admin_username
           label: Admin Username
-          group: Admin User
           description: Username for the default admin user
           schema:
             type: string
             default: admin
             required: true
-
         - variable: default_admin_password
           label: Admin Password
-          group: Admin User
           description: Password for the default admin user
           schema:
             type: string
             default: admin@local.test
             required: true
             hidden: true
-
         - variable: default_admin_name
           label: Admin Name
-          group: Admin User
           description: Display name for the default admin user
           schema:
             type: string
             default: Administrator
             required: true
-
-        - variable: local_signed_url_secret
-          label: Signed URL Secret
-          group: Security
-          description: |
-            Secret key for generating signed URLs (optional).</br>
-            If not provided, a secure key will be generated automatically.
-          schema:
-            type: string
-            hidden: true
-
         - variable: setup_email
           label: Setup Email
           description: |
@@ -165,26 +154,6 @@ questions:
                       description: TLS
                     - value: ssl
                       description: SSL
-
-        - variable: vite_app_api_url
-          label: API URL
-          group: Frontend Configuration
-          description: |
-            Backend API URL for frontend (optional).</br>
-            If not provided, will be automatically constructed from hostname and backend port (http://hostname:port).</br>
-            Examples:</br>
-            - http://truenas.local:3030</br>
-            - http://192.168.1.100:3030
-          schema:
-            type: uri
-
-        - variable: vite_stripe_purchase_peer_url
-          label: Stripe Purchase URL
-          group: Frontend Configuration
-          description: Stripe payment processing URL
-          schema:
-            type: string
-
         - variable: additional_envs
           label: Additional Environment Variables
           schema:

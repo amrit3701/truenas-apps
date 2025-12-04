@@ -53,10 +53,6 @@
 {% do backend.environment.add_env("DEFAULT_ADMIN_PASSWORD", values.lens.default_admin_password) %}
 {% do backend.environment.add_env("DEFAULT_ADMIN_NAME", values.lens.default_admin_name) %}
 
-{% if values.lens.local_signed_url_secret %}
-  {% do backend.environment.add_env("LOCAL_SIGNED_URL_SECRET", values.lens.local_signed_url_secret) %}
-{% endif %}
-
 {% do backend.environment.add_user_envs(values.lens.additional_envs) %}
 
 {% do backend.add_storage(values.consts.lens_uploads_path, values.storage.uploads) %}
@@ -73,10 +69,7 @@
 {% do frontend.healthcheck.set_test("http", {"port": values.consts.frontend_port, "path": "/"}) %}
 
 {% if values.lens.vite_app_api_url %}
-  {% set api_url = values.lens.vite_app_api_url %}
-  {% if api_url[-1:] != '/' %}
-    {% set api_url = api_url + '/' %}
-  {% endif %}
+  {% set api_url = values.lens.vite_app_api_url.rstrip("/") + "/" %}
   {% do frontend.environment.add_env("VITE_APP_API_URL", api_url) %}
 {% else %}
   {% do frontend.environment.add_env("VITE_APP_API_URL", "http://%s:%d/" | format(values.lens.hostname, values.network.backend_port.port_number)) %}

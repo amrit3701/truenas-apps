@@ -12,7 +12,6 @@ lens:
   default_admin_username: admin
   default_admin_password: admin@local.test
   default_admin_name: Administrator
-  local_signed_url_secret: test-secret-key-change-in-production
   setup_email: false
   email:
     host: smtp.test.com
