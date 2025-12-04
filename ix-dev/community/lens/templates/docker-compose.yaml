@@ -5,7 +5,7 @@
 {% set perms_config = {"uid": values.run_as.user, "gid": values.run_as.group, "mode": "check"} %}
 
 {# Init Container - Copies sample files from backend image to mounted volume #}
-{% set init_container = tpl.add_container(values.consts.init_container_name, "backend") %}
+{% set init_container = tpl.add_container(values.consts.init_container_name, "image") %}
 {% do init_container.setup_as_helper() %}
 {% do init_container.configs.add("init.sh", init(values), "/init.sh", "0755") %}
 {% do init_container.set_entrypoint(["/init.sh"]) %}
@@ -28,14 +28,14 @@
 {% set redis = tpl.deps.redis(values.consts.redis_container_name, "redis_image", redis_config, perm_container) %}
 
 {# Backend Container #}
-{% set backend = tpl.add_container(values.consts.backend_container_name, "backend") %}
+{% set backend = tpl.add_container(values.consts.backend_container_name, "image") %}
 {% do backend.depends.add_dependency(values.consts.mongo_container_name, "service_healthy") %}
 {% do backend.depends.add_dependency(values.consts.init_container_name, "service_completed_successfully") %}
-{% do backend.add_port(values.network.backend_port, {"container_port": values.consts.backend_port}) %}
-{% do backend.healthcheck.set_test("wget", {"port": values.consts.backend_port, "path": "/"}) %}
+{% do backend.add_port(values.network.backend_port, {"container_port": values.consts.internal_backend_port}) %}
+{% do backend.healthcheck.set_test("wget", {"port": values.consts.internal_backend_port, "path": "/"}) %}
 
 {% do backend.environment.add_env("HOSTNAME", values.lens.hostname) %}
-{% do backend.environment.add_env("PORT", values.consts.backend_port) %}
+{% do backend.environment.add_env("PORT", values.consts.internal_backend_port) %}
 {% do backend.environment.add_env("DB_URL", mongo.get_url("mongodb")+"?authSource=admin") %}
 {% do backend.environment.add_env("FRONTEND_URL", values.lens.frontend_url) %}
 {% do backend.environment.add_env("FC_WORKER_URL", "http://0.0.0.0:8080/2015-03-31/functions/function/invocations") %}
@@ -62,11 +62,11 @@
 {% endfor %}
 
 {# Frontend Container #}
-{% set frontend = tpl.add_container(values.consts.frontend_container_name, "frontend") %}
+{% set frontend = tpl.add_container(values.consts.frontend_container_name, "frontend_image") %}
 {% do frontend.add_caps(["CHOWN", "SETUID", "SETGID"]) %}
 {% do frontend.depends.add_dependency(values.consts.backend_container_name, "service_healthy") %}
-{% do frontend.add_port(values.network.frontend_port, {"container_port": values.consts.frontend_port}) %}
-{% do frontend.healthcheck.set_test("http", {"port": values.consts.frontend_port, "path": "/"}) %}
+{% do frontend.add_port(values.network.frontend_port, {"container_port": values.consts.internal_frontend_port}) %}
+{% do frontend.healthcheck.set_test("http", {"port": values.consts.internal_frontend_port, "path": "/"}) %}
 
 {% if values.lens.vite_app_api_url %}
   {% set api_url = values.lens.vite_app_api_url.rstrip("/") + "/" %}
@@ -82,7 +82,7 @@
 {% do frontend.environment.add_env("PROXY_SCHEME_PREFIX", "http://") %}
 
 {# FC Worker API Container #}
-{% set fc_worker_api = tpl.add_container(values.consts.fc_worker_api_container_name, "fc_worker_api") %}
+{% set fc_worker_api = tpl.add_container(values.consts.fc_worker_api_container_name, "fc_worker_api_image") %}
 {% do fc_worker_api.set_network_mode("service:%s" | format(values.consts.backend_container_name)) %}
 {% do fc_worker_api.depends.add_dependency(values.consts.backend_container_name, "service_healthy") %}
 {% do fc_worker_api.depends.add_dependency(values.consts.redis_container_name, "service_healthy") %}
@@ -93,7 +93,7 @@
 {% do fc_worker_api.environment.add_env("REDIS_PASSWORD", values.lens.redis_password) %}
 
 {# FC Worker Celery Container #}
-{% set fc_worker_celery = tpl.add_container(values.consts.fc_worker_celery_container_name, "fc_worker_celery") %}
+{% set fc_worker_celery = tpl.add_container(values.consts.fc_worker_celery_container_name, "fc_worker_celery_image") %}
 {% do fc_worker_celery.set_network_mode("service:%s" | format(values.consts.backend_container_name)) %}
 {% do fc_worker_celery.depends.add_dependency(values.consts.backend_container_name, "service_healthy") %}
 {% do fc_worker_celery.depends.add_dependency(values.consts.redis_container_name, "service_healthy") %}
@@ -102,7 +102,7 @@
 {% do fc_worker_celery.environment.add_env("REDIS_HOST", values.consts.redis_container_name) %}
 {% do fc_worker_celery.environment.add_env("REDIS_PORT", redis.get_port()) %}
 {% do fc_worker_celery.environment.add_env("REDIS_PASSWORD", values.lens.redis_password) %}
-{% do fc_worker_celery.environment.add_env("BACKEND_URL", "http://%s:%d" | format(values.consts.backend_container_name, values.consts.backend_port)) %}
+{% do fc_worker_celery.environment.add_env("BACKEND_URL", "http://%s:%d" | format(values.consts.backend_container_name, values.consts.internal_backend_port)) %}
 
 {# Permissions Container #}
 {% if perm_container.has_actions() %}
