@@ -41,7 +41,7 @@ run_as_context:
   group_name: root
   uid: 0
   user_name: root
-- description: MongoDB runs as any non-root user.
+- description: MongoDB and Redis runs as any non-root user.
   gid: 568
   group_name: mongodb
   uid: 568
