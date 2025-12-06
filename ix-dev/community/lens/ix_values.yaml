@@ -32,7 +32,6 @@ consts:
   perms_container_name: permissions
   db_user: lens
   db_name: lens
-  internal_backend_port: 3030
   internal_frontend_port: 80
   lens_uploads_path: /app/uploads
   init_uploads_path: /data

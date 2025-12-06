@@ -33,12 +33,12 @@
 {% do init_container.add_storage(values.consts.init_uploads_path, values.storage.uploads) %}
 
 {# Backend #}
-{% do backend.healthcheck.set_test("wget", {"port": values.consts.internal_backend_port, "path": "/"}) %}
+{% do backend.healthcheck.set_test("wget", {"port": values.network.backend_port.port_number, "path": "/"}) %}
 {% do backend.depends.add_dependency(values.consts.mongo_container_name, "service_healthy") %}
 {% do backend.depends.add_dependency(values.consts.init_container_name, "service_completed_successfully") %}
 
 {% do backend.environment.add_env("HOSTNAME", values.lens.hostname) %}
-{% do backend.environment.add_env("PORT", values.consts.internal_backend_port) %}
+{% do backend.environment.add_env("PORT", values.network.backend_port.port_number) %}
 {% do backend.environment.add_env("DB_URL", mongo.get_url("mongodb")+"?authSource=admin") %}
 {% do backend.environment.add_env("FRONTEND_URL", values.lens.frontend_url) %}
 {% do backend.environment.add_env("FC_WORKER_URL", "http://0.0.0.0:8080/2015-03-31/functions/function/invocations") %}
@@ -58,7 +58,7 @@
 
 {% do backend.environment.add_user_envs(values.lens.additional_envs) %}
 
-{% do backend.add_port(values.network.backend_port, {"container_port": values.consts.internal_backend_port}) %}
+{% do backend.add_port(values.network.backend_port) %}
 
 {% do backend.add_storage(values.consts.lens_uploads_path, values.storage.uploads) %}
 
@@ -105,7 +105,7 @@
 {% do fc_worker_celery.environment.add_env("REDIS_HOST", values.consts.redis_container_name) %}
 {% do fc_worker_celery.environment.add_env("REDIS_PORT", redis.get_port()) %}
 {% do fc_worker_celery.environment.add_env("REDIS_PASSWORD", values.lens.redis_password) %}
-{% do fc_worker_celery.environment.add_env("BACKEND_URL", "http://%s:%d" | format(values.consts.backend_container_name, values.consts.internal_backend_port)) %}
+{% do fc_worker_celery.environment.add_env("BACKEND_URL", "http://%s:%d" | format(values.consts.backend_container_name, values.network.backend_port.port_number)) %}
 
 {# Permissions #}
 {% if perm_container.has_actions() %}
