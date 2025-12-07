@@ -29,8 +29,8 @@
 
 ## Configuration
 
-- **Backend Port**: Default 3030 (configurable)
-- **Frontend Port**: Default 3000 (configurable)
+- **Backend Port**: Default 30301 (configurable)
+- **Frontend Port**: Default 30300 (configurable)
 - **MongoDB**: Not exposed externally by default (optional port exposure available)
 - **SMTP**: Optional email server configuration for notifications
 
