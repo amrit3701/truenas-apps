@@ -47,10 +47,10 @@ questions:
           label: Frontend URL
           description: |
             Full URL where the frontend will be accessible.</br>
-            Use the same hostname/IP as configured above, with port 3000 (or your custom port).</br>
+            Use the same hostname/IP as configured above, with port 30300 (or your custom port).</br>
             Examples:</br>
-            - http://truenas.local:3000</br>
-            - http://192.168.1.100:3000</br>
+            - http://truenas.local:30300</br>
+            - http://192.168.1.100:30300</br>
             - https://lens.example.com
           schema:
             type: uri
@@ -62,8 +62,8 @@ questions:
             Backend API URL for frontend (optional).</br>
             If not provided, will be automatically constructed from hostname and backend port (http://hostname:port).</br>
             Examples:</br>
-            - http://truenas.local:3030</br>
-            - http://192.168.1.100:3030
+            - http://truenas.local:30301</br>
+            - http://192.168.1.100:30301
           schema:
             type: uri
         - variable: vite_stripe_purchase_peer_url
